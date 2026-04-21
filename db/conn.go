@@ -2,29 +2,28 @@ package db
 
 import (
 	"context"
-	"log"
+	"fmt"
 	"os"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-var Pool *pgxpool.Pool
-
-func ConnectDB() {
+// ConnectDB cria e retorna um pool de conexões com o Neon DB.
+// Retorna o pool e um erro, seguindo o padrão Go de tratamento de erros.
+func ConnectDB() (*pgxpool.Pool, error) {
 	connStr := os.Getenv("DATABASE_URL")
 	if connStr == "" {
-		log.Fatal("DATABASE_URL not set")
+		return nil, fmt.Errorf("DATABASE_URL not set")
 	}
 
-	var err error
-	Pool, err = pgxpool.New(context.Background(), connStr)
+	pool, err := pgxpool.New(context.Background(), connStr)
 	if err != nil {
-		log.Fatalf("Unable to connect to database: %v", err)
+		return nil, fmt.Errorf("unable to connect to database: %w", err)
 	}
 
-	if err = Pool.Ping(context.Background()); err != nil {
-		log.Fatalf("Database ping failed: %v", err)
+	if err = pool.Ping(context.Background()); err != nil {
+		return nil, fmt.Errorf("database ping failed: %w", err)
 	}
 
-	log.Println("Connected to Neon DB")
+	return pool, nil
 }
