@@ -5,6 +5,9 @@ import (
 	"log"
 
 	"api-go-lang/db"
+	"api-go-lang/repository"
+	"api-go-lang/usecase"
+	"api-go-lang/controller"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -26,6 +29,13 @@ func main() {
 	}
 	defer dbConnection.Close()
 
+	// Repositories
+	ProductRepository := repository.NewProductRepository(dbConnection)
+	// Usecases
+	ProductUsecase := usecase.NewProductUsecase(ProductRepository)
+	// Controllers
+	ProductController := controller.NewProductController(ProductUsecase)
+
 	server.GET("/", func(ctx *gin.Context) {
 		ctx.String(200, "OK")
 	})
@@ -35,6 +45,8 @@ func main() {
 			"message": "pong",
 		})
 	})
+
+	server.GET("/product", ProductController.GetProducts)
 
 	log.Println("Starting server on :8080")
 	server.Run(":8080")
