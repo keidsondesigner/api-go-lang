@@ -34,6 +34,13 @@ func (p *ProductUsecase) GetProductById(id int) (model.Product, error) {
 	return p.productRepository.GetProductById(id)
 }
 
+// GetProductByName busca um produto pelo nome.
+// O receiver (p *ProductUsecase) usa ponteiro para trabalhar no objeto original,
+// não em uma cópia — necessário pois o tipo foi declarado com receivers de ponteiro.
+func (p *ProductUsecase) GetProductByName(name string) (model.Product, error) {
+	return p.productRepository.GetProductByName(name)
+}
+
 // CreateProduct cria um novo produto.
 // O receiver (p *ProductUsecase) usa ponteiro para trabalhar no objeto original,
 // não em uma cópia — necessário pois o tipo foi declarado com receivers de ponteiro.
