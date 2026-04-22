@@ -54,6 +54,18 @@ func (p *productController) GetProductById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, product)
 }
 
+// GetProductByName é o handler HTTP GET /product/name/:name.
+// Chama o usecase e retorna o produto em JSON, ou 500 se ocorrer algum erro.
+func (p *productController) GetProductByName(ctx *gin.Context) {
+	name := ctx.Param("name")
+	product, err := p.productUsecase.GetProductByName(name)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, product)
+}
+
 // CreateProduct é o handler HTTP POST /product.
 // Chama o usecase e retorna o produto em JSON, ou 500 se ocorrer algum erro.
 func (p *productController) CreateProduct(ctx *gin.Context) {
