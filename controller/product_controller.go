@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"api-go-lang/model"
 	"api-go-lang/usecase"
 
 	"github.com/gin-gonic/gin"
@@ -51,4 +52,21 @@ func (p *productController) GetProductById(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, product)
+}
+
+// CreateProduct é o handler HTTP POST /product.
+// Chama o usecase e retorna o produto em JSON, ou 500 se ocorrer algum erro.
+func (p *productController) CreateProduct(ctx *gin.Context) {
+	var product model.Product
+	if err := ctx.BindJSON(&product); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	id, err := p.productUsecase.CreateProduct(&product)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	product.ID = id
+	ctx.JSON(http.StatusCreated, product)
 }
