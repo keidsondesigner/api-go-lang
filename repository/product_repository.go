@@ -73,6 +73,32 @@ func (p *ProductRepository) GetProductById(id int) (model.Product, error) {
 	return product, nil
 }
 
+// Buscar produto por nome
+func (p *ProductRepository) GetProductByName(name string) (model.Product, error) {
+	query := `SELECT id, name, description, price FROM product WHERE name ILIKE $1`
+	rows, err := p.connection.Query(context.Background(), query, "%"+name+"%")
+
+	// Se deu erro ao executar a query, retornar nil e o erro
+	if err != nil {
+		fmt.Println(err)
+		return model.Product{}, err
+	}
+	defer rows.Close()
+
+	var product model.Product
+	for rows.Next() {
+		// Se deu erro ao capturar os dados, retornar nil e o erro
+		if err := rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price); err != nil {
+			fmt.Println(err)
+			return model.Product{}, err
+		}
+	}
+
+	// Se não deu erro, retornar o produto
+	return product, nil
+}
+
+
 func (p *ProductRepository) CreateProduct(product *model.Product) (int, error) {
 	query := `INSERT INTO product (name, description, price) VALUES ($1, $2, $3) RETURNING id`
 
