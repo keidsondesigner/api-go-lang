@@ -48,6 +48,7 @@ func main() {
 
 	server.GET("/product", ProductController.GetProducts)
 	server.GET("/product/:id", ProductController.GetProductById)
+	server.GET("/product/name/:name", ProductController.GetProductByName)
 	server.POST("/product", ProductController.CreateProduct)
 
 	log.Println("Starting server on :8080")
