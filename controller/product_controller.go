@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"api-go-lang/usecase"
 
@@ -34,4 +35,20 @@ func (p *productController) GetProducts(ctx *gin.Context) {
 		return
 	}
 	ctx.JSON(http.StatusOK, products)
+}
+
+// GetProductById é o handler HTTP GET /product/:id.
+// Chama o usecase e retorna o produto em JSON, ou 500 se ocorrer algum erro.
+func (p *productController) GetProductById(ctx *gin.Context) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	product, err := p.productUsecase.GetProductById(id)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	ctx.JSON(http.StatusOK, product)
 }
