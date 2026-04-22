@@ -72,3 +72,17 @@ func (p *ProductRepository) GetProductById(id int) (model.Product, error) {
 	// Se não deu erro, retornar o produto
 	return product, nil
 }
+
+func (p *ProductRepository) CreateProduct(product *model.Product) (int, error) {
+	query := `INSERT INTO product (name, description, price) VALUES ($1, $2, $3) RETURNING id`
+
+	var id int
+	err := p.connection.QueryRow(context.Background(), query, product.Name, product.Description, product.Price).Scan(&id)
+	if err != nil {
+		fmt.Println(err)
+		return 0, err
+	}
+
+	// Se não deu erro, retornar o id
+	return id, nil
+}
